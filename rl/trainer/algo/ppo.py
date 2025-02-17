@@ -63,9 +63,6 @@ class PPO():
                             adv_targ = sample
                     # Reshape to do in a single forward pass for all steps
                     
-                    # !!!! This Needs to be FIXED !!!!!
-                    # values, action_log_probs = self.actor_critic.evaluate_actions(
-                    #     obs_batch, output_ids_batch)
                     values, action_log_probs = self.actor_critic.evaluate_actions(
                         **obs_batch[0]) # since bs is 1
                     # check if there are gradients in self.actor_critic

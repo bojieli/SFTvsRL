@@ -18,8 +18,6 @@ class VLMValue(nn.Module):
     def __init__(self, base):
         super(VLMValue, self).__init__()
         self.base = base
-        # hard-code value head
-        # self.value_head = nn.Linear(4096, 1, bias=True).to(base.device, dtype=torch.float16)
         self.value_head = nn.Sequential(
             nn.Linear(4096, 1024), # First layer
             nn.ReLU(), # Non-linearity
@@ -76,23 +74,11 @@ class VLMPolicy(nn.Module):
             )
             output_ids = outputs['sequences'][:, inputs['input_ids'].shape[1]:]
         output_text = self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
-        # print("output_text:", output_text)
-        # output_text_w_special_tokens = self.tokenizer.decode(output_ids[0], skip_special_tokens=False)
-        # print("output_text_w_special_tokens:", output_text_w_special_tokens)
         cated_io = torch.cat((inputs['input_ids'], output_ids), dim = 1)
 
-        # estimate the total input tokens for this inference, given it is an autoregressive process, it is the sum of input_tokens, input_tokens + 1, ..., input_tokens + output_tokens
-        # for i in range(inputs['input_ids'].shape[1], cated_io.shape[1]):
-        #     self.token_cnt += 2*i
         self.called_inference_time += 1
-        # print the shape and assert False
-        # print("cated_io:", cated_io.shape)
-        # print("inputs['input_ids']:", inputs['input_ids'].shape)
-        # assert False
         assert cated_io.shape == outputs['sequences'].shape
         cated_io_txt = self.tokenizer.decode(cated_io[0], skip_special_tokens=False)
-        # print("cated_io_txt:", cated_io_txt)
-        # assert False
         # llama processor will automatically add one more bos token, which sucks
         new_inputs = {"input_ids": cated_io}
         for key in inputs.keys():
@@ -105,35 +91,6 @@ class VLMPolicy(nn.Module):
                 else:
                     new_inputs[key] = inputs[key]
         input_ids_register = inputs['input_ids']
-        # for key, item in new_inputs.items():
-        #     print(f"key: {key}, shape: {item.shape}")
-        #     print(f"old key: {key}, shape: {inputs[key].shape}")
-        # del inputs
-        # print("new_inputs:", new_inputs['input_ids'].shape)
-        # print("cated_io:", cated_io.shape)
-        # # show the difference between new_inputs and cated_io
-        # print("new_inputs:", new_inputs['input_ids'])
-        # print("cated_io:", cated_io)
-
-        # # enter a for loop and print out the decoded text, token id
-        # for i in range(max(new_inputs['input_ids'].shape[1], cated_io.shape[1])):
-        #     try:
-        #         print(f"idx: {i}, token_id: {cated_io[0][i]}, decoded_text: {self.tokenizer.decode(cated_io[0][i], skip_special_tokens=False)}")
-        #     except:
-        #         print(f"ids: {i} out of range of cated_io")
-        #     # do the same for new_inputs
-        #     try:
-        #         print(f"idx: {i}, token_id: {new_inputs['input_ids'][0][i]}, decoded_text: {self.tokenizer.decode(new_inputs['input_ids'][0][i], skip_special_tokens=False)}")
-        #     except:
-        #         print(f"ids: {i} out of range of new_inputs")
-        # # then print remaining tokens
-        # print(new_inputs.keys())
-        # # print all items in new_inputs
-        # for key in new_inputs.keys():
-        #     print(f"new key: {key}, value: {new_inputs[key]}, shape: {new_inputs[key].shape}")
-        #     # old inputs 
-        #     print(f"old key: {key}, value: {inputs[key]}, shape: {inputs[key].shape}")
-        #     print("=========")
         assert new_inputs['input_ids'].shape[1] == cated_io.shape[1]
         io_dict = {"io_pair": (input_ids_register, output_ids), **new_inputs}
         with torch.no_grad():
@@ -142,8 +99,6 @@ class VLMPolicy(nn.Module):
     
     def cat_io_pair(self, io_pair):
         to_be_cated = []
-        # for ele in io_lst:
-        # ele = io_lst
         input_ids, output_ids = io_pair[0], io_pair[1]
         to_be_cated.append(input_ids.to(self.base.device))
         to_be_cated.append(output_ids.to(self.base.device))
@@ -229,10 +184,6 @@ class VLMPolicy(nn.Module):
             target = torch.tensor([330,60599,794]).to(self.base.device)
         # print("target:", target)
         target = target.to(self.base.device)
-        # assert False, "Debug action"
-        # target = torch.tensor([29908,2467,1115]).to(base.device)
-
-        # tokens for text string:'"action":' (torch.tensor([[29908,2467,1115]]))
         matches = (unfolded == target).all(dim = -1)
         # print("matches:", matches)
         match_index = matches.nonzero(as_tuple=True)[-1]
@@ -248,24 +199,10 @@ class VLMPolicy(nn.Module):
                 action_tokens_log_prob = torch.tensor([-1]).to(self.base.device)
                 return values, sum_log_prob, action_tokens_log_prob
         
-        # print("output_ids_mask:", output_ids_mask)
-        # print("match_index_2", match_index)
-        ## omitting the second token for calculating log prob, because its logprb is very very small
-        
-        # decode cated io
-        # decoded_io = self.tokenizer.decode(cated_io[0], skip_special_tokens=False)
         thought_log_prob = torch.sum(selected_log_probs[:,1:match_index-1], dim = 1)
         
-        # print all items of selected log probs
-        # for i in range(selected_log_probs.shape[1]):
-        #     # if not zero
-        #     if torch.sum(selected_log_probs[:,i]) != 0:
-                
-        #         print(f"selected_log_probs {i}:", selected_log_probs[:,i])
-            # print("selected_log_probs:", selected_log_probs[:,i])
             
         action_tokens_log_prob = torch.sum(selected_log_probs[:,match_index-1:], dim = 1)
-        # print("action_tokens_log_prob:", action_tokens_log_prob)
         sum_log_prob = self.thought_prob_coef*thought_log_prob + action_tokens_log_prob
         return values, sum_log_prob, action_tokens_log_prob
 
