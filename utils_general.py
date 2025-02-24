@@ -19,7 +19,6 @@ import torch
 import numpy as np
 import random
 from tqdm import tqdm
-import transformers
 """
 Init seed
 """

@@ -7,7 +7,11 @@ By Tianzhe
 
 import gymnasium as gym
 import gym_cards
-import gym_virl
+try:
+    import gym_virl
+except ImportError:
+    pass
+
 import torch
 from utils_general import StatLogger, process_formula, re_match, init_seed
 from utils_rl import REWARD_FN, REWARD_FN_VIRL

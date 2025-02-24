@@ -1,10 +1,5 @@
-# from evaluation.evaluator.api_evaluator import *
-# from evaluation.evaluator.oai_evaluator import *
-# from evaluation.evaluator.oai_evaluator_oneline import *
-# # from evaluator.cambrian_evaluator import *
-# from evaluation.evaluator.cambrian_evaluator_oneline import *
-# from evaluation.evaluator.llama_vl_evaluator_oneline import *
 from evaluation.evaluator.llama_evaluator import LlamaEvaluator
+from evaluation.evaluator.api_evaluator import APIEvaluator
 evaluator_init = {
     # "ApiEvaluator": ApiEvaluator,
     # "OpenAIEvaluator": OpenAIEvaluator,
@@ -12,5 +7,6 @@ evaluator_init = {
     # # "CambrianEvaluator": CambrianEvaluator,
     # "CambrianEvaluator_oneline": CambrianEvaluator_oneline,
     # "LlamaEvaluator_oneline": LlamaEvaluator_oneline,
+    'APIEvaluator': APIEvaluator,
     "LlamaEvaluator": LlamaEvaluator
 }
