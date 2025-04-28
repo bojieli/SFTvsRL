@@ -4,6 +4,7 @@ __pycache__/
 
 # logs
 *.json
+!sft/sft_scripts/zero3_offload.json
 *.jsonl
 checkpoints/
 wandb/*
