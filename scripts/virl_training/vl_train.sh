@@ -15,7 +15,7 @@
 
 LR=1e-7
 save_every=1
-save_model=False # disable running saving. one checkpoint ~30GB
+save_model=True # one checkpoint ~30GB
 
 CKPT_NAME="tianzhechu/VIRL-VL-Init"
 PORT=$((RANDOM % 10000 + 1000))
@@ -40,6 +40,7 @@ DS_SKIP_CUDA_CHECK=1 TOKENIZERS_PARALLELISM=false \
     --num_steps=256 \
     --model_path=${CKPT_NAME} \
     --save_ckpt=${save_model} \
+    --save_every=${save_every} \
     --env_config.route_info_path=${ROUTE_INFO} \
     --env_config.platform_cfg.OFFLINE.PANORAMA_DIR=${STREETVIEWS} \
     --env_config.platform_cfg.OFFLINE.GPS_TO_PANO_PATH=${GPS_TO_PANO} 
