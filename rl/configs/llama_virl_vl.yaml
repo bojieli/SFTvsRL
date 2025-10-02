@@ -100,3 +100,4 @@ generation_config:
 output_dir: logs/train.jsonl # not used in training
 seed: 42
 save_ckpt: False
+save_every: 1
