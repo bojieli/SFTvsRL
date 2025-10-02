@@ -20,7 +20,7 @@ ENABLE=True
 # use absolute action space, consistent with training
 ABS=True
 NUM_TRAJ=48
-CKPT_NAME="YOUR_MODEL_PATH"
+CKPT_NAME="tianzhechu/VIRL-VL-Init"
 OUTPUT_FOLDER="logs/virl_vl_rule_ood_verify_${VITER}"
 PORT=$((RANDOM % 10000 + 2000))
 

@@ -14,9 +14,9 @@
 #SBATCH --partition=gpu
 export PYTHONPATH=src:$PYTHONPATH
 MODEL_NAME="meta-llama/Llama-3.2-11B-Vision-Instruct"
-DATA_JSON="YOUR_JSON_DATA_PATH"
+DATA_JSON="/root/SFTvsRL_Data/SFT_Data/virl-l/data.json"
 IMAGE_FOLDER="./"
-OUTPUT_FOLDER="../train_ckpt/gp_l_sft"
+OUTPUT_FOLDER="../train_ckpt/virl_l_sft"
 
 # gp-l
 LR=1e-6

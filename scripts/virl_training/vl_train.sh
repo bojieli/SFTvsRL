@@ -17,13 +17,14 @@ LR=1e-7
 save_every=1
 save_model=False # disable running saving. one checkpoint ~30GB
 
-CKPT_NAME="YOUR_MODEL_PATH" # official init model: tianzhechu/GP-L-Init
+CKPT_NAME="tianzhechu/VIRL-VL-Init"
 PORT=$((RANDOM % 10000 + 1000))
 
 # download from our huggingface dataset repo tianzhechu/SFTvsRL_Data
-ROUTE_INFO="YOUR_ROUTE_INFO_PATH" # .json
-GPS_TO_PANO="YOUR_GPS_TO_PANO_MAPPING_PATH" # .pkl
-STREETVIEWS="YOUR_STREETVIEWS_PATH" # folder of images
+BASE_DIR="/root/SFTvsRL_Data/VIRL_routes"
+ROUTE_INFO="${BASE_DIR}/nyc_1k_routes/route_infos.json"
+GPS_TO_PANO="${BASE_DIR}/nyc_1k_routes/gps_pano_mapping.pkl"
+STREETVIEWS="${BASE_DIR}/nyc_1k_routes/street_views/"
 
 DS_SKIP_CUDA_CHECK=1 TOKENIZERS_PARALLELISM=false \
     accelerate launch \
@@ -39,7 +40,6 @@ DS_SKIP_CUDA_CHECK=1 TOKENIZERS_PARALLELISM=false \
     --num_steps=256 \
     --model_path=${CKPT_NAME} \
     --save_ckpt=${save_model} \
-    --save_every=${save_every} \
     --env_config.route_info_path=${ROUTE_INFO} \
     --env_config.platform_cfg.OFFLINE.PANORAMA_DIR=${STREETVIEWS} \
     --env_config.platform_cfg.OFFLINE.GPS_TO_PANO_PATH=${GPS_TO_PANO} 
