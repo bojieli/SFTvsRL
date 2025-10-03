@@ -15,9 +15,9 @@
 
 LR=1e-6
 save_every=1
-save_model=False # disable running saving. one checkpoint ~30GB
+save_model=True
 
-CKPT_NAME="YOUR_MODEL_PATH" # official init model: tianzhechu/GP-VL-Init
+CKPT_NAME="tianzhechu/GP-VL-Init"
 PORT=$((RANDOM % 10000 + 1000))
 
 DS_SKIP_CUDA_CHECK=1 TOKENIZERS_PARALLELISM=false accelerate launch \
